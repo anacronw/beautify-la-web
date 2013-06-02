@@ -1,0 +1,144 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title></title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/eggplant/jquery-ui.css">
+<!-- build:js scripts/vendor/modernizr.js -->
+<script src="bower_components/modernizr/modernizr.js"></script>
+<!-- endbuild -->
+<link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/"></script>
+</head>
+<body class="claro">
+<div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false" style="width:100%; height:100%;">
+    <div id="map" data-dojo-type="dijit/layout/ContentPane"></div>
+    <div id="left" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:false" region="left" style="width: 20%;height:100%;">
+        <div id="project-info">
+            <h1 class="name"></h1>
+            <div class="username"></div>
+        </div>
+        <div id="leftPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+        <div id="projectBar">
+            Project Completion:
+            <div class="progress progress-striped active" style="width: 230px">
+                <div class="bar"></div>
+            </div>
+            <div style="text-align: right">
+                <button id="donateBtn" class="btn btn-mini">Donate $1!</button>
+                <button id="donateBtn2" class="btn btn-mini">Donate $1000!</button>
+            </div>
+        </div>
+        <a href="#projDialog" role="button" id="createProjBtn" class="btn btn-block" data-toggle="modal">Create a new project here</a>
+    </div>
+</div>
+
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+ g.src='//www.google-analytics.com/ga.js';
+ s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+
+<!-- build:js scripts/main.js -->
+<script src="bower_components/jquery/jquery.js"></script>
+<script src="components/jquery-ui/ui/minified/jquery-ui.min.js"></script>
+
+<script src="scripts/app.js"></script>
+<script src="scripts/events.js"></script>
+<!-- endbuild -->
+
+<!-- build:js scripts/plugins.js -->
+<script src="bower_components/sass-bootstrap/js/bootstrap-affix.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-alert.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-dropdown.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-tooltip.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-modal.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-transition.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-button.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-popover.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-typeahead.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-carousel.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-scrollspy.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-collapse.js"></script>
+<script src="bower_components/sass-bootstrap/js/bootstrap-tab.js"></script>
+<!-- endbuild -->
+<div id="projDialog" class="modal hide fade" role="dialog" aria-hidden="true"> 
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Create a Project</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputName">Project Name</label>
+                <div class="controls">
+                    <input type="text" id="inputName" placeholder="Project Name">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputDesc">Description</label>
+                <div class="controls">
+                    <textarea rows="3" id="inputDesc" placeholder="Describe your project"></textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="control-label"># Trees to Plant</div>
+
+                <div class="controls">
+                    <div style="display: inline-block">
+                        <span id="numTrees">0</span>
+                        <button type="button" id="minusTreeBtn" class="btn btn-mini">-</button>
+
+                        <button type="button" id="addTreeBtn" class="btn btn-mini">+</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button id="submitProjBtn" class="btn">Submit Project</a>
+    </div>
+</div>
+<div id="loading">
+    <div class="contentBack"></div>
+    <div class="content">
+        <h1>Loading ...</h1>
+    </div>
+</div>
+<div id="notification" style="display: none">
+    <div class="contentBack"></div>
+    <div class="content">
+        <h1 class="message"></h1>
+    </div>
+</div>
+<audio id="introLoop" src="audio/loop.ogg" autoplay loop>
+    <p>Your browser does not support the audio element.</p>
+</audio>
+<audio id="fanfare" src="audio/fanfare.ogg"></audio>
+<audio id="yay" src="audio/yay.ogg"></audio>
+<audio id="yay-plus" src="audio/yay-plus.ogg"></audio>
+<div id="formTemplate" style="display: none">
+    <h3 id="logo">Beautify LA</h3>
+    <div>
+        <input type="text" id="inputUsername" placeholder="Enter your username" style="margin: 0">
+        <button class="loginBtn" type="button" class="btn">Log In</button>
+    </div>
+</div>
+<script type="text/javascript" src="http://js.pusher.com/2.0/pusher.min.js"></script>
+
+</body>
+</html>
